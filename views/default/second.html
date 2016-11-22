@@ -1,0 +1,9 @@
+{{extend 'layout.html'}}
+<link href="{{=URL('static','css/stupid.css')}}" rel="stylesheet" type="text/css"/>
+<h4>Please Pick One Dependent Variable</h4>
+<body>
+    <div class = "padded">
+         <p><b>This dataset has {{=length}} rows</b></p>
+         {{=form}}               
+    </div>
+</body>
