@@ -79,14 +79,20 @@ def third():
     from sklearn import preprocessing
     from sklearn.model_selection import cross_val_predict
     from sklearn.metrics import r2_score
+    from sklearn.preprocessing import Imputer
 
     
     a = session.choose
     df = pd.read_csv(session.df_filename)
     y_data = np.array(df.loc[:,a])
     X_picked = df.drop(a,1)
+    imp = Imputer() 
+    X_picked = imp.fit_transform(X_picked)
+    y_data = imp.fit_transform(y_data)
+    y_data = np.reshape(y_data, (len(df),))
     X_picked = preprocessing.minmax_scale(X_picked,feature_range=(0,1))
     y_data = preprocessing.minmax_scale(y_data,feature_range=(0,1))
+
     
     def add_layer(x, in_size, out_size, activation_function,layer,dropout):
         num_layer = 'layer%s' % layer
