@@ -1,42 +1,35 @@
-<html>
 {{extend 'layout.html'}}
-<meta charset="utf-8">
-<link href="{{=URL('static','css/stupid.css')}}" rel="stylesheet" type="text/css"/>
-<link href="css/custom.css" rel="stylesheet" type="text/css"/>
 <h2>Here are the regression results for {{=a}}</h2>
-<body id = "vue">
+<div id = "vue">
+  <div class = "container">
+    <div class = "container silver">
+      <p><b>The Coefficient for Neural Network is: {{=weight}}</b></p>
+      <p><b>The Coefficient for Ridge Regression is: {{=ridge_coef}}</b></p>
+      <p><b>The Coefficient for Lasso Regression is: {{=lasso_coef}}</b></p>
+    </div>
+    </div>
+  <div class="container">
+    <div class = "third">
+      {{=IMG(_src = URL('static', 'images/%s.png' % id_nn))}}
+    </div>
+    <div class = "third">
+      {{=IMG(_src = URL('static', 'images/%s.png' % id_ridge))}}
+    </div>
+    <div class = "third">
+      {{=IMG(_src = URL('static', 'images/%s.png' % id_lasso))}} 
+    </div>
+  </div> 
+  <div class = "container"> 
+    <button v-on:click="toggling">Hide Details</button>
+    <button v-on:click="re_toggling">Show Details</button>
     <div class = "container padded center">
-        <div class = "container silver">
-             <p><b>The Coefficient for Neural Network is: {{=Weight}}</b></p>
-             <p><b>The Coefficient for Ridge Regression is: {{=ridge_coef}}</b></p>
-             <p><b>The Coefficient for Lasso Regression is: {{=lasso_coef}}</b></p>
-        </div>
+      <div class = "container glass">
+        <p v-if="seen">This is R square for Neural Network: <b>{{=r2_score_NN}}</b> </p>
+        <p v-if="seen">This is R square for Ridge Regression: <b>{{=r_linear_ridge[0]}}</b></p>
+        <p v-if="seen">This is R square for Lasso Regression: <b>{{=r_linear_lassoAIC[0]}}</b></p>
+      </div>
     </div>
-    <div class="container">
-        <div class = "third">
-            {{=IMG(_src = URL('static', 'images/%s.png' % id_nn))}}
-        </div>
-        <div class = "third">
-            {{=IMG(_src = URL('static', 'images/%s.png' % id_ridge))}}
-        </div>
-        <div class = "third">
-            {{=IMG(_src = URL('static', 'images/%s.png' % id_lasso))}} 
-        </div>
-    </div> 
-    <div class = "container"> 
-        <button v-on:click="toggling">Hide Details</button>
-        <button v-on:click="re_toggling">Show Details</button>
-        <div class = "container padded center">
-            <div class = "container glass">
-                <p v-if="seen">This is R square for Neural Network: <b>{{=r2_score_NN}}</b> </p>
-                <p v-if="seen">This is R square for Ridge Regression: <b>{{=r_linear_ridge[0]}}</b></p>
-                <p v-if="seen">This is R square for Lasso Regression: <b>{{=r_linear_lassoAIC[0]}}</b></p>
-            </div>
-        </div>
-    </div>
-   
-    
-</body>
-<script src="{{=URL('static','/js/jquery-sugar-vue-core.js')}}"></script>
-<script src="{{=URL('static','/js/custom.js')}}"></script>
-</html>
+  </div>
+  <script src="{{=URL('static','/js/jquery-sugar-vue-core.js')}}"></script>
+  <script src="{{=URL('static','/js/custom.js')}}"></script>
+</div>
