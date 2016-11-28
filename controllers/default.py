@@ -24,12 +24,11 @@ def second():
     # TODO: there is a problem here in case the name contains special symbols
     fields = [Field(row,'boolean',default=False) for row in rows]
     form = SQLFORM.factory(*fields)
-    if form.process().accepted:
-        response.flash = 'You will see a Neural Network graph and a Chi Square graph'   
+    if form.process().accepted: 
         for row in rows:
             if row in request.vars:
-                choose = row
-        redirect(URL('third',args=uploaded_content.id,vars=dict(choose=choose)))
+                session.choose = row
+        redirect(URL('second_half',args=uploaded_content.id))
     elif form.errors:
         response.flash = 'form has errors'
     else:
@@ -37,10 +36,31 @@ def second():
     return dict(form=form, length=length)
 
 @auth.requires_login()
+def second_half():
+    uploaded_content = db.uploaded_content(request.args(0,cast=int),created_by=auth.user.id)
+    fullname = os.path.join(request.folder,'uploads',uploaded_content.filename)
+    rows = uploaded_content.column_names
+    choose = session.choose
+    # TODO: there is a problem here in case the name contains special symbols
+    field = [Field(row,'boolean',default=False) for row in rows]
+    form_delete = SQLFORM.factory(*field)
+    delete = []
+    if form_delete.process().accepted: 
+        for row in rows:
+            if row in request.vars:
+                delete.append(row)
+        redirect(URL('third',args=uploaded_content.id,vars=dict(choose=choose, delete = delete)))
+    elif form_delete.errors:
+        response.flash = 'form has errors'
+    else:
+        response.flash = 'please fill out the form'
+    return dict(form=form_delete)
+
+@auth.requires_login()
 def third():
     uploaded_content = db.uploaded_content(request.args(0,cast=int),created_by=auth.user.id)
     fullname = os.path.join(request.folder,'uploads',uploaded_content.filename)
-    return run_models(fullname, request.vars.choose)
+    return run_models(fullname, request.vars.choose, request.vars.delete)
 
 @auth.requires_login()
 def fourth():

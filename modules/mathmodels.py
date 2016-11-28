@@ -54,13 +54,17 @@ def get_info(filename):
     df = pd.read_csv(filename)
     return list(df.columns.values), len(df)
 
-def run_models(fullname, choose):
+def run_models(fullname, choose, delete):
     folder, filename = os.path.split(fullname)
     folder = folder.replace('/uploads','/static')
     a = choose
+    b = delete
     df = pd.read_csv(fullname)
     y_data = np.array(df.loc[:,a])
     X_picked = df.drop(a,1)
+    for row in b:
+        X_picked = X_picked.drop(row,1)
+    num_column = len(X_picked.columns.values)
     imp = Imputer() 
     X_picked = imp.fit_transform(X_picked)
     y_data = imp.fit_transform(y_data)
@@ -86,14 +90,14 @@ def run_models(fullname, choose):
 
     # Create input variable
     with tf.name_scope('Input'):
-        x = tf.placeholder(tf.float32,[None,9])
+        x = tf.placeholder(tf.float32,[None,num_column])
         y_ = tf.placeholder(tf.float32,[None,1])
         keep_prob = tf.placeholder(tf.float32) #dropout probability
         dropout = 0.85
 
     # Build up layers
     with tf.name_scope('Layer'):
-         y= add_layer(x,9,1,2,1,dropout)
+         y= add_layer(x,num_column,1,2,1,dropout)
 
     # input
     header = list(df.columns.values)
@@ -123,8 +127,6 @@ def run_models(fullname, choose):
         counter = 0
         df1 = np.float32(df)
         for i in xrange(len(df.values)):
-            #xs = np.array(np.float32([[df.iloc[i][headers] for headers in list_header]]))/1000
-            #ys = np.array([[np.float32(df.iloc[i][a])]])/1000
             xs = np.array(np.float32([X_picked[i]]))
             ys = np.array(np.float32([[y_data[i]]]))
             feed={x:xs,y_:ys,keep_prob:dropout}
@@ -164,8 +166,6 @@ def run_models(fullname, choose):
     c= stats.pearsonr(actual, predict)
     plt.figure()
     plt.scatter(predict,actual,s=3)
-    # plt.xlim((0,1000))
-    # plt.ylim((0,1000))
     plt.xlabel('Prediction')
     plt.ylabel('Observation')
     plt.title('This is Neural Network')
@@ -176,8 +176,6 @@ def run_models(fullname, choose):
     plt.savefig(filename)
     plt.figure()
     plt.scatter(prediction_ridge,actual,s=3)
-    # plt.xlim((0,1000))
-    # plt.ylim((0,1000))
     plt.xlabel('Prediction')
     plt.ylabel('Observation')
     plt.title('This is Ridge Regression')
@@ -187,8 +185,6 @@ def run_models(fullname, choose):
     plt.savefig(filename1)
     plt.figure()
     plt.scatter(prediction_lasso,actual,s=3)
-    # plt.xlim((0,1000))
-    # plt.ylim((0,1000))
     plt.xlabel('Prediction')
     plt.ylabel('Observation')
     plt.title('This is Lasso Regression')
@@ -201,7 +197,7 @@ def run_models(fullname, choose):
                 weight=weight, r_linear_lassoAIC=r_linear_lassoAIC, 
                 r_linear_ridge=r_linear_ridge, r2_score_NN=r2_score_NN, uuid=uuid)
 
-def make_plots(fullname, choose):
+def make_plots(fullname, choose,delete):
     folder, filename = os.path.split(fullname)
     folder = folder.replace('/uploads','/static')
     a = choose
@@ -344,4 +340,3 @@ def make_plots(fullname, choose):
     r_square = r_value**2
     return dict(a=a, id_nn=id_nn, id_lsf=id_lsf, b=b, c=c, d=d, e=e, 
                 r_square1=r_square1, r_square=r_square, uuid=uuid)
-
